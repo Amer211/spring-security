@@ -53,10 +53,6 @@ public class SecurityConfig {
     public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
         return configuration.getAuthenticationManager();
 }
-    @Bean
-    public UserDetailsService userDetailsService() {
-        return CustomUserDetailsService;
-    }
 
 
 
