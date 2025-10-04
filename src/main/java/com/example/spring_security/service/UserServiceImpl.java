@@ -4,6 +4,7 @@ import com.example.spring_security.entity.Authority;
 import com.example.spring_security.entity.User;
 import com.example.spring_security.repository.AuthorityRepository;
 import com.example.spring_security.repository.UserRepository;
+import jakarta.annotation.PostConstruct;
 import jakarta.transaction.Transactional;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -69,4 +70,35 @@ public class UserServiceImpl implements UserService {
     public Optional<User> findUserByUsername(String username) {
         return Optional.ofNullable(userRepository.findByUsername(username));
     }
+
+
+    //create Admin
+    public void initAdminRole(){
+        if(userRepository.findByUsername("admin")!=null){
+            logger.warn("Admin user already exists");
+            return;
+        }
+        User admin = new User();
+        admin.setUsername("admin");
+        admin.setPassword(passwordEncoder.encode("admin"));
+        Authority adminAuthority = authorityRepository.findByAuthority("ROLE_ADMIN");
+        admin.getAuthorities().add(adminAuthority);
+        logger.info("Admin user was created");
+        userRepository.save(admin);
+    }
+    //run it one time
+    //then comment it out
+    //or check if roles exist before creating them
+    @PostConstruct
+    public void init(){
+        initAdminRole();
+    }
+
+
+
+
+
+
+
+
 }
