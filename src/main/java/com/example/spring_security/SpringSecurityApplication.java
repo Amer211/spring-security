@@ -11,7 +11,7 @@ public class SpringSecurityApplication {
 	public static void main(String[] args) {
 
 		SpringApplication.run(SpringSecurityApplication.class, args);
-		System.out.println("Application started successfully!");
+		System.out.println("Application has started successfully!");
 
 	}
 

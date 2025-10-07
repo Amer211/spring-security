@@ -30,12 +30,12 @@ public class User {
             message = "Password must contain at least one uppercase letter, one lowercase letter, and one digit")
     private String password;
 
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinTable(
             name = "user_authorities",
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "authority_id"))
-    private Set<Authority> authorities= new HashSet<>();
+    private Set<Authority> authorities;
 
 
 

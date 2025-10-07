@@ -11,6 +11,7 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 
@@ -36,12 +37,16 @@ public class UserServiceImpl implements UserService {
     @Transactional
     @Override
     public User saveUser(User user) {
-        if(userRepository.findByUsername(user.getUsername())!=null){
+        if(userRepository.findByUsername(user.getUsername()).isPresent()){
             logger.warn("User with username {} already exists ", user.getUsername());
             throw new RuntimeException("User with username "+ user.getUsername()+" already exists");
         }
+        user.setUsername(user.getUsername());
         user.setPassword(passwordEncoder.encode(user.getPassword()));
 
+        if(user.getAuthorities()==null || user.getAuthorities().isEmpty()){
+            user.setAuthorities(new HashSet<>());
+        }
         Authority userAuthority = authorityRepository.findByAuthority("ROLE_USER");
         user.getAuthorities().add(userAuthority);
 
@@ -68,13 +73,13 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Optional<User> findUserByUsername(String username) {
-        return Optional.ofNullable(userRepository.findByUsername(username));
+        return userRepository.findByUsername(username);
     }
 
 
     //create Admin
     public void initAdminRole(){
-        if(userRepository.findByUsername("admin")!=null){
+        if(userRepository.findByUsername("admin").isPresent()){
             logger.warn("Admin user already exists");
             return;
         }
@@ -82,6 +87,11 @@ public class UserServiceImpl implements UserService {
         admin.setUsername("admin");
         admin.setPassword(passwordEncoder.encode("admin"));
         Authority adminAuthority = authorityRepository.findByAuthority("ROLE_ADMIN");
+
+        if(admin.getAuthorities()==null || admin.getAuthorities().isEmpty()){
+            admin.setAuthorities(new HashSet<>());
+        }
+
         admin.getAuthorities().add(adminAuthority);
         logger.info("Admin user was created");
         userRepository.save(admin);
