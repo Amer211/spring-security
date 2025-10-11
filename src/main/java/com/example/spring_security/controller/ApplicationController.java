@@ -3,6 +3,8 @@ package com.example.spring_security.controller;
 import com.example.spring_security.entity.User;
 import com.example.spring_security.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -18,16 +20,19 @@ public class ApplicationController {
     }
     @GetMapping("/home")
     public String home() {
+
         return "Welcome to the Home Page!";
     }
+
     @GetMapping("/dashboard")                          // or CustomUserDetails user
     public String signup(HttpServletRequest request, @AuthenticationPrincipal(expression = "user") User user) {
         return "Welcome to the Dashboard Page, "+user.getUsername()+
                 "! Your session ID:" +request.getSession().getId();
     }
     @PostMapping("/save")
-    public String save(@RequestBody User user) {
-        userService.saveUser(user);
-        return user.getUsername()+" saved successfully!";
+    public ResponseEntity<User> save(@RequestBody User user) {
+        return new ResponseEntity<>(userService.saveUser(user),
+                HttpStatus.CREATED);
     }
+
 }
